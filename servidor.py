@@ -364,6 +364,7 @@ while True:
     connection, client_address = sock.accept()
     try:
         print('Conectado desde: ', client_address)
+        #mostrando menu
         menu()
         # Receive the data in small chunks and retransmit it
         # Recibe los datos en pequeños chunks y retorna o retransmite
