@@ -21,16 +21,6 @@ def crear_tablero(filas, columnas):
             tablero[fila].append(ESPACIO_VACIO)
     return tablero
 
-# Se crea un TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-# Se une el socket al puerto
-server_address = ('localhost', 10000)
-print('levantando en {} puerto {}'.format(*server_address))
-sock.bind(server_address)
-
-# Escuchando coneciones que pueden llegar.
-sock.listen(1)
 
 # volver a jugar
 def volver_a_jugar():
@@ -356,28 +346,42 @@ def jugador_vs_computadora(tablero):
     ESTA_JUGANDO_CPU = False
 
 
+
+# Se crea un TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Se une el socket al puerto
+server_address = ('localhost', 10000)
+print('levantando en {} puerto {}'.format(*server_address))
+sock.bind(server_address)
+
+# Escuchando coneciones que pueden llegar.
+sock.listen(1)
+
+print('Servidor connecta 4')
+
+menu()
+
+connection, client_address = sock.accept()
+
 while True:
-    # Esperando por una conexion
-    print('Esperando conexion')
-    
-    # Se muestra menu
-    connection, client_address = sock.accept()
+    # Esperando por una conexion    
     try:
         print('Conectado desde: ', client_address)
-        #mostrando menu
-        menu()
-        # Receive the data in small chunks and retransmit it
+          
         # Recibe los datos en pequeños chunks y retorna o retransmite
         while True: 
-            data = connection.recv(16)
-            print('recibido {!r}'.format(data))
-            if data:
-                print('Enviando data devuelta al cliente')
-                connection.sendall(data)
+            data = connection.recv(1024)
+            numero = data.decode('utf-8')
+            print("--", data.decode('utf-8'))
+            menu()
+            if data:               
+                enviar = input("->")
+                connection.send(enviar.encode('utf-8'))
             else:
                 print('sin data desde', client_address)
                 break
 
     finally:
-        # Clean up the connection
+        # cerrar conexion
         connection.close()
